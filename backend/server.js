@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const cors = require('cors');
+
 
 const express = require('express');
 
@@ -17,6 +19,10 @@ app.use((req, res, next) => {
     console.log(req.path, req.method)
     next();
 })
+
+// This will allow all origins. In a production environment, you should
+// configure this to only allow your frontend application's origin.
+app.use(cors());
 
 //routes
 app.use('/api/workouts/', workoutRoutes)

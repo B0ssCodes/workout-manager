@@ -1,36 +1,87 @@
 import { useWorkoutsContext } from "../hooks/useWorkoutsContext"
+import { useAuthContext } from "../hooks/useAuthContext"
+import { motion, AnimatePresence } from "framer-motion";
+import api from '../api'; // Import the axios instance
+import EditForm from "./EditForm";
+import { useState } from "react";
+import { BiPencil, BiTrash } from 'react-icons/bi';
+
 
 //date fns
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 const WorkoutDetails = ({ workout }) => {
     const { dispatch } = useWorkoutsContext()
+    const { user } = useAuthContext()
 
+    const [editOpen, setEditOpen] = useState(false)
 
-const handleClick = async () => {
+    const closeEdit = () => setEditOpen(false);
+   const openEdit = () => setEditOpen(true);
 
+    const handleDeleteClick = async () => {
+        if(!user){
+            return
+        }
+        
+        try {
+            const response = await api.delete(`/api/workouts/${workout._id}`, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
     
-    const response = await fetch("api/workouts/" + workout._id, {
-        method: "DELETE"
-    })
-    
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    } else {
-        const json = await response.json()
-        dispatch({type: 'DELETE_WORKOUT', payload: json})
+            // No need to check response.ok here
+            dispatch({type: 'DELETE_WORKOUT', payload: response.data})
+        } catch (error) {
+            console.error(error);
+        }
     }
 
-}
-
-
     return (
-        <div className="workout-details">
-            <h4>{workout.title}</h4>
-            <p><strong>Load (kg): </strong>{workout.load}</p>
-            <p><strong>Reps: </strong>{workout.reps}</p>
-            <p>{formatDistanceToNow(new Date(workout.createdAt), { addSuffix: true })}</p>
-            <span className= "material-symbols-outlined" onClick={handleClick}>delete</span>
+        <div className="card my-5 bg-altDark">
+            <div className="card">
+                <div className="card-body">
+                    <h5 className="card-title">{workout.title}</h5>
+                </div>
+                <ul className="list-group list-group-flush">
+                    {workout.sets.map((set, index) => (
+                        <li key={index} className="list-group-item">
+                            Set {index + 1}: Load (kg): {set.load}, Reps: {set.reps}
+                        </li>
+                    ))}
+                </ul>
+                <div className="card-body">
+                    <span className="card-link me-5">
+                        <motion.span 
+                            className= "material-symbols-outlined edit" 
+                            onClick={() => (editOpen ? closeEdit() : openEdit())}
+                            whileHover={{scale: 1.1 }}
+                        >
+                            <BiPencil size={25}/>
+                        </motion.span>
+                    </span>
+                    <AnimatePresence 
+                        initial={false}
+                        mode='wait'
+                        onExitComplete={() => null}
+                    >
+                        {editOpen && <EditForm editOpen={editOpen} handleClose={closeEdit} workout={workout}/>}
+                    </AnimatePresence>
+                    <span className="card-link ms-5">
+                        <motion.span 
+                            className= "material-symbols-outlined delete" 
+                            onClick={handleDeleteClick}
+                            whileHover={{scale: 1.1 }}
+                        >
+                            <BiTrash size={25}/>
+                        </motion.span>
+                    </span>
+                </div>
+            </div>
+            <div className="card-footer text-body-secondary">
+                {formatDistanceToNow(new Date(workout.createdAt), { addSuffix: true })}
+            </div>       
         </div>
     )
 }

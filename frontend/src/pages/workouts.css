@@ -1,0 +1,110 @@
+/* google font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&family=VT323&display=swap');
+
+
+/* layout */
+
+
+
+:root {
+  --primary: #1aac83;
+  --error: #e7195a;
+}
+
+.pages{
+  
+  min-height: 100vh;
+  padding: 0 0.5rem;
+
+}
+
+/* homepage */
+
+/* new workout form */
+
+input {
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 1em;
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+div.error {
+  padding: 10px;
+  background: #ffefef;
+  border: 1px solid var(--error);
+  color: var(--error);
+  border-radius: 4px;
+  margin: 20px 0;
+}
+input.error {
+  border: 1px solid var(--error);
+}
+
+/* auth forms */
+
+
+
+
+.backdrop{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+
+.workout-form-motion {
+  width: clamp(50%, 500px, 80%);
+  height: clamp(50%, 400px, 90%);
+ background: #111;
+  margin: auto;
+  
+  border-radius: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.create-form {
+  width: 90%;
+  height: 90%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+ 
+}
+
+
+
+.shadow-color {
+  box-shadow: 0 0 30px 5px #006400; /* DarkGreen */
+}
+
+.bench-workout-box {
+  box-shadow: 0 0 20px 1px #006400; /* DarkGreen */
+  border-radius: 3rem;
+  
+}
+
+.position-relative {
+    position: relative;
+}
+
+.position-absolute {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+

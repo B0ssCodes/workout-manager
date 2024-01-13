@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 
 //get all workouuts
 const getWorkouts = async (req, res) => {
-    const workouts = await Workout.find({}).sort({createdAt: -1});  //sort by newest
+    const user_id = req.user._id;
+    const workouts = await Workout.find({ user_id }).sort({createdAt: -1});  //sort by newest
 
     res.status(200).json(workouts);
 }
@@ -25,20 +26,16 @@ const getWorkout = async (req, res) => {
     res.status(200).json(workout);
 }
 
-//create a workout
 const createWorkout = async (req, res) => {
-    const {title, load, reps} = req.body;
+    const {title, exercises} = req.body;
 
     let emptyFields = [];
     
     if (!title){
         emptyFields.push('title');
     }
-    if (!load){
-        emptyFields.push('load');
-    }
-    if (!reps){
-        emptyFields.push('reps');
+    if (!exercises || exercises.length === 0){
+        emptyFields.push('exercises');
     }
     if(emptyFields.length > 0) {
         return res.status(400).json({ error: "Please fill in all the fields", emptyFields})
@@ -46,13 +43,13 @@ const createWorkout = async (req, res) => {
 
     //add doc to db
     try{
-        const workout = await Workout.create({title, load, reps});
-        res.status(200).json(workout);
-    } catch (error){
-        res.status(400).json({error: error.message});
+        const user_id = req.user._id;
+        const workout = await Workout.create({title, exercises, user_id});
+        res.status(201).json(workout);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to create workout", details: error});
     }
 }
-
 //delete a workout
 const deleteWorkout = async (req, res) => {
     const {id} = req.params;
@@ -69,7 +66,6 @@ const deleteWorkout = async (req, res) => {
 
     res.status(200).json(workout);
 }
-
 //update a workout
 const updateWorkout = async (req, res) => {
     const {id} = req.params;
@@ -78,8 +74,12 @@ const updateWorkout = async (req, res) => {
         return res.status(404).json({error: 'No such workout'})
     }
 
-    const workout = await Workout.findOneAndUpdate({_id: id}, ...req.body);
+    const {sets} = req.body;
+    if (sets && (!Array.isArray(sets) || sets.some(set => typeof set !== 'object' || !set.load || !set.reps))) {
+        return res.status(400).json({error: 'Invalid sets field'});
+    }
 
+    const workout = await Workout.findOneAndUpdate({_id: id}, {...req.body}, { new: true });    
     if(!workout){
         return res.status(404).json({error: 'No such workout'})
     }

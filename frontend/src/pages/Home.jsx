@@ -1,33 +1,16 @@
-import { useEffect } from "react";
-//components
-import WorkoutDetails from "../components/WorkoutDetails";
-import WorkoutForm from "../components/WorkoutForm";
-import { useWorkoutsContext } from "../hooks/useWorkoutsContext";
+import './workouts.css'
 
 const Home = () => {
-   const {workouts, dispatch} = useWorkoutsContext()
-
-    useEffect( () => { 
-        const fetchWorkouts = async () => {
-            const response = await fetch('/api/workouts')
-            const json = await response.json()
-
-            if (response.ok) {
-                dispatch({ type: 'SET_WORKOUTS', payload: json })
-            }
-        }
-        fetchWorkouts()
-     }, [dispatch] )
 
     return (
-        <div className="home">
-            <div className="workouts">
-                {workouts && workouts.map( (workout) => (
-                    <WorkoutDetails key={workout._id} workout={workout} />
-                ))}
-            </div>
-            <WorkoutForm />
+        <div className="container mt-5">
+            <div className="position-relative">
+            <img src="/gym-thumbnail.webp" className="img-fluid"/>
+            <h1 className="display-1 text-center position-absolute w-100">Become The Boss</h1>
+        </div>
+
         </div>
     )
 }
+
 export default Home

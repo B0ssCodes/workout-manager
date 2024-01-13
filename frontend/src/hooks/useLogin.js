@@ -2,20 +2,17 @@ import { useState } from 'react';
 import { useAuthContext } from './useAuthContext';
 import api from '../api'; // Import the axios instance
 
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
-
-export const useSignup = () => {
+export const useLogin = () => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(null);
     const { dispatch } = useAuthContext();
-    
  
-    const signup = async (firstName, lastName, email, password, recaptchaToken) => {
+    const login = async (email, password) => {
         setIsLoading(true);
         setError(null);
         
         try {
-            const response = await api.post('/api/user/signup', { firstName, lastName, email, password, recaptchaToken });
+            const response = await api.post('/api/user/login', { email, password });
 
             if (response.status !== 200) {
                 setIsLoading(false);
@@ -30,9 +27,9 @@ export const useSignup = () => {
             }
         } catch (error) {
             setIsLoading(false);
-            setError(error.response.data.error || error.message);
+            setError(response.data.error || error.message);
         }
     }
 
-    return { signup, error, isLoading }
+    return { login, error, isLoading }
 }
